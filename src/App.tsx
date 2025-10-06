@@ -227,7 +227,7 @@ function App() {
           </Card>    
         </Grid>
         <Grid item xs={1} md={1}>
-          <Droppable id={`${item.position}-next`}>
+          <Droppable id={`${position}-next`}>
           <div ref={setNextRef} style={style}>
             Drag after {position}
           </div>
