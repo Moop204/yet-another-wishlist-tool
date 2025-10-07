@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import {DndContext} from '@dnd-kit/core';
 import Grid from '@mui/material/Grid';
@@ -63,14 +63,6 @@ function DraggableItem(props) {
 //   const [item, setItem] = useState('');
 //   const [priority, setPriority] = useState('low');
 
-//   // Function to upload data to local storage
-//   const uploadData = () => {
-//     const data = {
-//       item,
-//       priority,
-//     };
-//     localStorage.setItem('data', JSON.stringify(data));
-//   };
 
 //   return (
 //     <form>
@@ -110,6 +102,14 @@ function App() {
   //   <Draggable>New Item</Draggable>
   // );
 
+  useEffect(() => {
+    const savedItems = localStorage.getItem('priority-item-list');
+    if (savedItems) {
+      setPriorityItems(JSON.parse(savedItems));
+    }
+  }, []); // Empty dependency array = runs only once on mount  
+
+  
   function handleDragEnd(event) {
 
     // console.log(event)
@@ -145,9 +145,13 @@ function App() {
 
     newPriorityItems.splice(safeDropPosition, 0, movedItem);
     setPriorityItems(newPriorityItems);
+    // Set in local storage
+    localStorage.setItem('priority-item-list', JSON.stringify(newPriorityItems));
 
     // setPriorityItems([...priorityItems]);  
   }
+
+
 
   const handleButtonPress = (event, product, price, url, justification) => {
 
@@ -158,7 +162,11 @@ function App() {
         price: price,
         justification: justification,
     }
-    setPriorityItems([...priorityItems, item])
+    const newPriorityItem = [...priorityItems, item] 
+    setPriorityItems(newPriorityItem)
+    localStorage.setItem('priority-item-list', JSON.stringify(newPriorityItem));
+
+    // Clear form
     setProduct('');
     setUrl('');
     setPrice('');
@@ -263,7 +271,14 @@ function App() {
                     label="Cost"
                     size="small"
                     value={price}
-                    onChange={(e) => setPrice(e.target.value)}
+                    onChange={(e) => {
+                      // Check if value is a number
+                      const value = e.target.value;
+                      if (isNaN(Number(value))) {
+                        return;
+                      }
+                      setPrice(value)
+                    }}
                 />
                 <TextField
                     required
