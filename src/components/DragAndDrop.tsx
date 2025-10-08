@@ -30,8 +30,15 @@ export const DraggableItem = (props: {position: number, children: React.ReactNod
   };
 
   return (
-    <button ref={setNodeRef} style={style} {...listeners} {...attributes}>
+    <div ref={setNodeRef} style={style} {...listeners} {...attributes} onClick={(e) => {
+        if ((e.target as HTMLElement).tagName === 'BUTTON') {
+          console.log("I FOUND A BUTTON")
+          e.stopPropagation();
+        } else {
+          console.log("NAH NO BUTS")
+        }
+    }}>
       {props.children}
-    </button>
+    </div>
   );
 }

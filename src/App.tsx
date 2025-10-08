@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState, type MouseEvent } from 'react'
 import './App.css'
 import {DndContext, type DragEndEvent} from '@dnd-kit/core';
 import Grid from '@mui/material/Grid';
@@ -61,7 +62,7 @@ function App() {
 
 
 
-  const handleButtonPress = (event, product, price, url, justification) => {
+  const handleButtonPress = (event: MouseEvent<HTMLButtonElement, MouseEvent<any>>, product: string, price: number, url: string, justification: string) => {
       const item: PriorityItem = {
         product: product,
         url: url,
@@ -79,70 +80,77 @@ function App() {
     setJustification('');
   }
 
+  const handleRemove = (position: number) => {
+    console.log(`removing ${position}`)
+    const newPriorityItems = [...priorityItems];
+    newPriorityItems.splice(position, 1);
+    setPriorityItems(newPriorityItems);
+    localStorage.setItem('priority-item-list', JSON.stringify(newPriorityItems));
+  } 
+
   return (
       <>
-      <DndContext onDragEnd={handleDragEnd}>
-      <Grid container spacing={{ xs: 2, md: 3 }} columns={1}>
-        <Grid className="" container spacing={2} direction={'column'}>
-          <Grid >
-            <Typography variant="h2">
-              Shopping Wish List
-            </Typography>
+        <DndContext onDragEnd={handleDragEnd}>
+          <Grid className="" container spacing={2} direction={'column'}>
+            <Grid >
+              <Typography variant="h2">
+                Shopping Wish List
+              </Typography>
 
-            <Card>
-              <CardContent>
-                <TextField
-                    required
-                    id="product-field"
-                    label="Product"
-                    size="small"
-                    onChange={(e) => setProduct(e.target.value)}
-                    value={product}
-                />
-                <TextField
-                    required
-                    id="cost-field"
-                    label="Cost"
-                    size="small"
-                    value={price}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (isNaN(Number(value))) {
-                        return;
-                      }
-                      setPrice(Number(value))
-                    }}
-                />
-                <TextField
-                    required
-                    id="link-field"
-                    label="Link"
-                    size="small"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                />
-                <TextField
-                    required
-                    id="justification-field"
-                    label="Justification"
-                    size="small"
-                    value={justification}
-                    onChange={(e) => setJustification(e.target.value)}
-                />
-              </CardContent>  
-              <CardActions>
-                <Button onClick={(e) => handleButtonPress(e, product, price, url, justification)} variant="contained">Add product</Button>
-                <Button onClick={() => setPriorityItems([])} variant="contained">Clear list</Button>
-              </CardActions>
-            </Card>            
+              <Card>
+                <CardContent>
+                  <TextField
+                      required
+                      id="product-field"
+                      label="Product"
+                      size="small"
+                      onChange={(e) => setProduct(e.target.value)}
+                      value={product}
+                  />
+                  <TextField
+                      required
+                      id="cost-field"
+                      label="Cost"
+                      size="small"
+                      value={price}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (isNaN(Number(value))) {
+                          return;
+                        }
+                        setPrice(Number(value))
+                      }}
+                  />
+                  <TextField
+                      required
+                      id="link-field"
+                      label="Link"
+                      size="small"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                  />
+                  <TextField
+                      required
+                      id="justification-field"
+                      label="Justification"
+                      size="small"
+                      value={justification}
+                      onChange={(e) => setJustification(e.target.value)}
+                  />
+                </CardContent>  
+                <CardActions>
+                  <Button onClick={(e) => handleButtonPress(e as any, product, price, url, justification)} variant="contained">Add product</Button>
+                  <Button onClick={() => setPriorityItems([])} variant="contained">Clear list</Button>
+                </CardActions>
+              </Card>            
 
+            </Grid>
+              <ItemList priorityItems={priorityItems} onRemove={handleRemove}/>
+            <Grid>
+            </Grid>
           </Grid>
-            <ItemList priorityItems={priorityItems}/>
-          <Grid>
-          </Grid>
-        </Grid>
-      </Grid>
-      </DndContext>
+        </DndContext>
+      
     </>
   )
 }
